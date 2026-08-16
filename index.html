@@ -558,6 +558,8 @@
       <span class="eyebrow">Pour commencer</span>
       <h2 class="display">Quel est son nom ?</h2>
       <input class="quiz-champ" id="qPrenom" type="text" placeholder="Son prénom" autocomplete="off">
+      <input class="quiz-champ" id="qNom" type="text" placeholder="Son nom de famille" autocomplete="off">
+      <p class="quiz-note">Le nom doit correspondre à celui de sa boîte aux lettres.</p>
       <button class="btn quiz-suivant" data-va="1" type="button">Continuer</button>
     </div>
 
@@ -578,6 +580,7 @@
         <input class="quiz-champ" id="qNpa" type="text" inputmode="numeric" placeholder="Code postal" autocomplete="off">
         <input class="quiz-champ" id="qVille" type="text" placeholder="Ville" autocomplete="off">
       </div>
+      <input class="quiz-champ" id="qComplement" type="text" placeholder="Complément — étage, c/o… (facultatif)" autocomplete="off">
       <button class="btn quiz-suivant" data-va="3" type="button">Continuer</button>
     </div>
 
@@ -702,6 +705,7 @@
 
   function toutRempli(){
     return document.getElementById('qPrenom').value.trim()
+      && document.getElementById('qNom').value.trim()
       && reponses.intention
       && document.getElementById('qRue').value.trim()
       && document.getElementById('qNpa').value.trim()
@@ -725,8 +729,9 @@
   quiz.querySelectorAll('.quiz-suivant').forEach(function(b){
     b.addEventListener('click', function(){
       var va = parseInt(b.dataset.va,10);
-      if(va === 1 && !document.getElementById('qPrenom').value.trim()){
-        document.getElementById('qPrenom').focus(); return;
+      if(va === 1){
+        if(!document.getElementById('qPrenom').value.trim()){ document.getElementById('qPrenom').focus(); return; }
+        if(!document.getElementById('qNom').value.trim()){ document.getElementById('qNom').focus(); return; }
       }
       if(va === 3){
         if(!document.getElementById('qRue').value.trim()){ document.getElementById('qRue').focus(); return; }
@@ -756,8 +761,9 @@
 
   function remplirRecap(){
     document.getElementById('rRythme').textContent = rythmeChoisi + ' bouquet' + (rythmeChoisi>1?'s':'') + ' / mois';
-    document.getElementById('rPrenom').textContent = document.getElementById('qPrenom').value.trim();
-    document.getElementById('rAdresse').textContent = document.getElementById('qRue').value.trim() + ', ' + document.getElementById('qNpa').value.trim() + ' ' + document.getElementById('qVille').value.trim();
+    document.getElementById('rPrenom').textContent = document.getElementById('qPrenom').value.trim() + ' ' + document.getElementById('qNom').value.trim();
+    var comp = document.getElementById('qComplement').value.trim();
+    document.getElementById('rAdresse').textContent = document.getElementById('qRue').value.trim() + (comp ? ', ' + comp : '') + ', ' + document.getElementById('qNpa').value.trim() + ' ' + document.getElementById('qVille').value.trim();
     document.getElementById('rIntention').textContent = reponses.intention;
     document.getElementById('rSignature').textContent = document.getElementById('qSignature').value.trim();
     document.getElementById('rPrix').textContent = TARIFS[rythmeChoisi] + ' CHF / mois';
@@ -787,7 +793,10 @@
       rythme: rythmeChoisi + ' bouquets/mois',
       prix: TARIFS[rythmeChoisi] + ' CHF/mois',
       prenom_destinataire: document.getElementById('qPrenom').value.trim(),
-      adresse: document.getElementById('qRue').value.trim() + ', ' + document.getElementById('qNpa').value.trim() + ' ' + document.getElementById('qVille').value.trim(),
+      nom_destinataire: document.getElementById('qNom').value.trim(),
+      adresse: document.getElementById('qRue').value.trim(),
+      complement: document.getElementById('qComplement').value.trim(),
+      npa_ville: document.getElementById('qNpa').value.trim() + ' ' + document.getElementById('qVille').value.trim(),
       intention: reponses.intention,
       signature: document.getElementById('qSignature').value.trim()
     };
